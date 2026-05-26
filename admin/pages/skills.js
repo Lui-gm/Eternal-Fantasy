@@ -37,11 +37,11 @@ export async function loadPage(main) {
 
   table.innerHTML = skills.map(s => `
     <tr>
-      <td>${s.name}</td>
-      <td>${s.power}</td>
-      <td>${s.cost}</td>
-      <td>${s.element}</td>
-      <td>${s.description}</td>
+      <td>${s.name ?? ""}</td>
+      <td>${s.power ?? ""}</td>
+      <td>${s.cost ?? ""}</td>
+      <td>${s.element ?? ""}</td>
+      <td>${s.description ?? ""}</td>
       <td>
         <button data-id="${s.id}" class="editSkill">編集</button>
         <button data-id="${s.id}" class="deleteSkill">削除</button>
