@@ -1,9 +1,12 @@
 // js/main.js
 import { auth } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
 const screen = document.getElementById("screen");
 
+// ログイン状態を監視
 onAuthStateChanged(auth, (user) => {
   if (user) {
     screen.innerHTML = `
