@@ -1,10 +1,6 @@
 import { getAllSkills, addSkill, updateSkill, deleteSkill } from "../services/skills.js";
 
-let mainRef = null;
-let skillsCache = [];
-
 export async function loadPage(main) {
-  mainRef = main;
 
   main.innerHTML = `
     <h1>スキル管理</h1>
@@ -37,9 +33,9 @@ export async function loadPage(main) {
   `;
 
   const table = document.getElementById("skillsTable");
-  skillsCache = await getAllSkills();
+  const skills = await getAllSkills();
 
-  table.innerHTML = skillsCache.map(s => `
+  table.innerHTML = skills.map(s => `
     <tr>
       <td>${s.name ?? ""}</td>
       <td>${s.power ?? ""}</td>
@@ -53,12 +49,48 @@ export async function loadPage(main) {
     </tr>
   `).join("");
 
+  // ★★★ ここに openForm を置く（loadPage の中）★★★
+  function openForm(skill = null) {
+    const form = document.getElementById("skillForm");
+    form.style.display = "block";
+
+    document.getElementById("formTitle").innerText = skill ? "スキル編集" : "新規スキル";
+
+    document.getElementById("skillName").value = skill?.name || "";
+    document.getElementById("skillPower").value = skill?.power || "";
+    document.getElementById("skillCost").value = skill?.cost || "";
+    document.getElementById("skillElement").value = skill?.element || "";
+    document.getElementById("skillDesc").value = skill?.description || "";
+
+    document.getElementById("saveSkillBtn").onclick = async () => {
+      const data = {
+        name: document.getElementById("skillName").value,
+        power: Number(document.getElementById("skillPower").value),
+        cost: Number(document.getElementById("skillCost").value),
+        element: document.getElementById("skillElement").value,
+        description: document.getElementById("skillDesc").value
+      };
+
+      if (skill) {
+        await updateSkill(skill.id, data);
+      } else {
+        await addSkill(data);
+      }
+      loadPage(main);
+    };
+
+    document.getElementById("cancelSkillBtn").onclick = () => {
+      form.style.display = "none";
+    };
+  }
+
+  // ★★★ ここで初めて openForm が参照できる ★★★
   document.getElementById("addSkillBtn").onclick = () => openForm();
 
   document.querySelectorAll(".editSkill").forEach(btn => {
     btn.onclick = () => {
       const id = btn.dataset.id;
-      const skill = skillsCache.find(s => s.id === id);
+      const skill = skills.find(s => s.id === id);
       openForm(skill);
     };
   });
@@ -68,43 +100,8 @@ export async function loadPage(main) {
       const id = btn.dataset.id;
       if (confirm("削除しますか？")) {
         await deleteSkill(id);
-        loadPage(mainRef);
+        loadPage(main);
       }
     };
   });
-}
-
-// ← loadPage の外に出す（これが重要）
-function openForm(skill = null) {
-  const form = document.getElementById("skillForm");
-  form.style.display = "block";
-
-  document.getElementById("formTitle").innerText = skill ? "スキル編集" : "新規スキル";
-
-  document.getElementById("skillName").value = skill?.name || "";
-  document.getElementById("skillPower").value = skill?.power || "";
-  document.getElementById("skillCost").value = skill?.cost || "";
-  document.getElementById("skillElement").value = skill?.element || "";
-  document.getElementById("skillDesc").value = skill?.description || "";
-
-  document.getElementById("saveSkillBtn").onclick = async () => {
-    const data = {
-      name: document.getElementById("skillName").value,
-      power: Number(document.getElementById("skillPower").value),
-      cost: Number(document.getElementById("skillCost").value),
-      element: document.getElementById("skillElement").value,
-      description: document.getElementById("skillDesc").value
-    };
-
-    if (skill) {
-      await updateSkill(skill.id, data);
-    } else {
-      await addSkill(data);
-    }
-    loadPage(mainRef);
-  };
-
-  document.getElementById("cancelSkillBtn").onclick = () => {
-    form.style.display = "none";
-  };
 }
