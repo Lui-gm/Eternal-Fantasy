@@ -1,9 +1,7 @@
 import { db } from "../utils/firebase.js";
 import {
   collection,
-  onSnapshot,
-  query,
-  limit
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export async function loadPage(main) {
@@ -29,12 +27,9 @@ export async function loadPage(main) {
 let logsCache = [];
 
 function startRealtimeListener() {
-  const q = query(
-    collection(db, "logs"),
-    limit(200)   // ← これだけで十分
-  );
+  const ref = collection(db, "logs");   // ← query() を使わない
 
-  onSnapshot(q, (snap) => {
+  onSnapshot(ref, (snap) => {
     logsCache = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     renderLogs();
   });
