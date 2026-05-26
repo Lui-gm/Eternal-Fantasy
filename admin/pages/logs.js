@@ -4,7 +4,8 @@ import {
   onSnapshot,
   orderBy,
   query,
-  limit
+  limit,
+  where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export async function loadPage(main) {
@@ -48,6 +49,7 @@ let logsCache = [];
 function startRealtimeListener() {
   const q = query(
     collection(db, "logs"),
+    where("timestamp", "!=", null),   // ← timestamp が無くてもクエリが成立する
     orderBy("timestamp", "desc"),
     limit(200)
   );
