@@ -120,7 +120,7 @@
     const main = document.getElementById("main");
 
     try {
-      const module = await import(`/Eternal-Fantasy/admin/pages/${page}.js`);
+      const module = await import(`./pages/${page}.js`);
       module.loadPage(main);
     } catch (e) {
       main.innerHTML = `<h2>ページが存在しません: ${page}</h2>`;
