@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>ゲーム開始 - Eternal Fantasy</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <script type="module" src="../js/firebase.js"></script>
+  <script type="module">
+    import { auth } from "../js/firebase.js";
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+    const screen = document.getElementById("screen");
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        location.href = "../auth/login.html";
+      } else {
+        screen.innerHTML = `
+          <p>ようこそ、${user.email} さん</p>
+          <p>（ここにゲーム画面を実装していく）</p>
+          <button id="logout">ログアウト</button>
+        `;
+
+        document.getElementById("logout").onclick = () => {
+          signOut(auth);
+        };
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div id="app">
+    <h1>Eternal Fantasy</h1>
+
+    <div id="screen">読み込み中…</div>
+
+    <div id="nav">
+      <a href="../index.html">トップへ戻る</a>
+    </div>
+  </div>
+</body>
+</html>
