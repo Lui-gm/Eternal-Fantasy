@@ -1,7 +1,7 @@
 import { db } from "../utils/firebase.js";
 import {
   collection,
-  getDocs,
+  onSnapshot,
   orderBy,
   query,
   limit
@@ -21,7 +21,6 @@ export async function loadPage(main) {
       </select>
 
       <input id="searchBox" placeholder="キーワード検索 (skillId, userId など)" />
-      <button id="reloadBtn">再読み込み</button>
     </div>
 
     <table border="1" cellpadding="8" style="width:100%;">
@@ -38,46 +37,48 @@ export async function loadPage(main) {
     </table>
   `;
 
-  document.getElementById("filterType").addEventListener("change", loadLogs);
-  document.getElementById("searchBox").addEventListener("input", loadLogs);
-  document.getElementById("reloadBtn").addEventListener("click", loadLogs);
+  // フィルタ変更時に再描画
+  document.getElementById("filterType").addEventListener("change", renderLogs);
+  document.getElementById("searchBox").addEventListener("input", renderLogs);
 
-  loadLogs();
+  startRealtimeListener();
 }
 
-async function loadLogs() {
-  const type = document.getElementById("filterType").value;
-  const keyword = document.getElementById("searchBox").value;
+let logsCache = []; // リアルタイムで受け取ったログを保持
 
+function startRealtimeListener() {
   const q = query(
     collection(db, "logs"),
     orderBy("timestamp", "desc"),
     limit(200)
   );
 
-  const snap = await getDocs(q);
+  // リアルタイム監視
+  onSnapshot(q, (snap) => {
+    logsCache = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderLogs();
+  });
+}
+
+function renderLogs() {
+  const type = document.getElementById("filterType").value;
+  const keyword = document.getElementById("searchBox").value;
   const table = document.getElementById("logsTable");
 
-  table.innerHTML = snap.docs
-    .map(doc => {
-      const d = doc.data();
-
-      // 種類フィルタ
-      if (type && d.type !== type) return "";
-
-      // キーワード検索
-      const text = JSON.stringify(d);
-      if (keyword && !text.includes(keyword)) return "";
-
-      return `
-        <tr>
-          <td>${d.type}</td>
-          <td>${d.userId ?? ""}</td>
-          <td>${d.action ?? ""}</td>
-          <td>${d.detail ?? ""}</td>
-          <td>${d.timestamp?.toDate().toLocaleString() ?? ""}</td>
-        </tr>
-      `;
+  table.innerHTML = logsCache
+    .filter(d => {
+      if (type && d.type !== type) return false;
+      if (keyword && !JSON.stringify(d).includes(keyword)) return false;
+      return true;
     })
+    .map(d => `
+      <tr>
+        <td>${d.type}</td>
+        <td>${d.userId ?? ""}</td>
+        <td>${d.action ?? ""}</td>
+        <td>${d.detail ?? ""}</td>
+        <td>${d.timestamp?.toDate().toLocaleString() ?? ""}</td>
+      </tr>
+    `)
     .join("");
 }
