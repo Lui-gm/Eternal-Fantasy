@@ -15,17 +15,18 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+// ★ これが無いと pages 側が全部死ぬ
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// 未ログインなら /auth/login.html に飛ばす
+// ★ login.html が admin フォルダ直下ならこれで正しい
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     location.href = "login.html";
   }
 });
 
-// ログアウト
 window.logout = () => {
   signOut(auth);
 };
