@@ -47,12 +47,9 @@ export async function loadPage(main) {
 let logsCache = [];
 
 function startRealtimeListener() {
-  // Firestore の仕様：
-  // timestamp が存在しないドキュメントがあると orderBy が無効になる
-  // → where("timestamp", ">=", new Date(0)) なら必ず成立する
   const q = query(
     collection(db, "logs"),
-    where("timestamp", ">=", new Date(0)),   // ← これが最強の回避策
+    where("timestamp", ">=", new Date(0)),   // ← これが絶対必要
     orderBy("timestamp", "desc"),
     limit(200)
   );
