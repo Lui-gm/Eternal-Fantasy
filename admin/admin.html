@@ -1,54 +1,132 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>管理画面</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      display: flex;
-      height: 100vh;
-    }
-    nav {
-      width: 200px;
-      background: #333;
-      color: #fff;
-      padding: 20px;
-    }
-    nav ul {
-      list-style: none;
-      padding: 0;
-    }
-    nav li {
-      padding: 10px;
-      cursor: pointer;
-    }
-    nav li:hover {
-      background: #444;
-    }
-    #main {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-  </style>
-</head>
+<meta charset="UTF-8">
+<title>Eternal Fantasy 管理画面</title>
+<style>
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    display: flex;
+    height: 100vh;
+    background: #f5f5f5;
+  }
 
+  /* 左サイドバー */
+  #sidebar {
+    width: 240px;
+    background: #1e1e1e;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  #sidebar h2 {
+    margin-top: 0;
+    font-size: 20px;
+  }
+
+  .menu-item {
+    padding: 10px 0;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+  }
+
+  .menu-item:hover {
+    color: #00c3ff;
+  }
+
+  /* メインエリア */
+  #content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 上部ヘッダー */
+  #header {
+    height: 60px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  #main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  #logout {
+    padding: 8px 16px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+</style>
+</head>
 <body>
 
-  <nav>
-    <ul>
-      <li data-page="dashboard">ダッシュボード</li>
-      <li data-page="skills">スキル管理</li>
-      <li data-page="weapons">武器管理</li>
-    </ul>
-  </nav>
+<!-- 左サイドバー -->
+<div id="sidebar">
+  <h2>管理メニュー</h2>
 
-  <div id="main">読み込み中...</div>
+  <div class="menu-item" onclick="loadPage('dashboard')">ダッシュボード</div>
+  <div class="menu-item" onclick="loadPage('skills')">スキル管理</div>
+  <div class="menu-item" onclick="loadPage('weapons')">武器管理</div>
+  <div class="menu-item" onclick="loadPage('summons')">召喚石管理</div>
+  <div class="menu-item" onclick="loadPage('characters')">キャラ管理</div>
+  <div class="menu-item" onclick="loadPage('enemies')">敵データ管理</div>
+  <div class="menu-item" onclick="loadPage('gacha')">ガチャ管理</div>
+  <div class="menu-item" onclick="loadPage('events')">イベント管理</div>
+  <div class="menu-item" onclick="loadPage('users')">ユーザー管理</div>
+  <div class="menu-item" onclick="loadPage('logs')">ログ閲覧</div>
+  <div class="menu-item" onclick="loadPage('notices')">通知送信</div>
+  <div class="menu-item" onclick="loadPage('maintenance')">メンテナンス</div>
+  <div class="menu-item" onclick="loadPage('debug')">デバッグ</div>
+  <div class="menu-item" onclick="loadPage('settings')">設定</div>
 
-  <!-- ページ切り替えの心臓部 -->
-  <script type="module" src="./main.js"></script>
+  <button id="logout" onclick="logout()">ログアウト</button>
+</div>
+
+<!-- 右側：ヘッダー + メイン -->
+<div id="content">
+  <div id="header">
+    <div id="pageTitle">ダッシュボード</div>
+    <div>管理者：紬稀</div>
+  </div>
+
+  <div id="main">
+    <!-- ページ内容がここに読み込まれる -->
+  </div>
+</div>
+
+<script type="module" src="auth.js"></script>
+
+<script type="module">
+  // ページ読み込み
+  window.loadPage = async (page) => {
+    document.getElementById("pageTitle").innerText = page;
+
+    const main = document.getElementById("main");
+
+    // ページごとに動的 import
+    try {
+      const module = await import(`./pages/${page}.js`);
+      module.loadPage(main);
+    } catch (e) {
+      main.innerHTML = `<h2>ページが存在しません: ${page}</h2>`;
+    }
+  };
+
+  // 初期ページ
+  loadPage("dashboard");
+</script>
 
 </body>
 </html>
