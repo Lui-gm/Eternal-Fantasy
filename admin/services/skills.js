@@ -1,5 +1,6 @@
 // /admin/services/skills.js
 
+import { db } from "../utils/firestore.js";
 import {
   collection,
   getDocs,
@@ -8,9 +9,6 @@ import {
   updateDoc,
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// utils/firestore.js で Firestore インスタンス(db) を export している
-import { db } from "../utils/firestore.js";
 
 // skills コレクション参照
 const skillsRef = collection(db, "skills");
