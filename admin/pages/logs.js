@@ -2,10 +2,8 @@ import { db } from "../utils/firebase.js";
 import {
   collection,
   onSnapshot,
-  orderBy,
   query,
-  limit,
-  where
+  limit
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export async function loadPage(main) {
@@ -49,9 +47,7 @@ let logsCache = [];
 function startRealtimeListener() {
   const q = query(
     collection(db, "logs"),
-    where("timestamp", ">=", new Date(0)),   // ← これが絶対必要
-    orderBy("timestamp", "desc"),
-    limit(200)
+    limit(200)   // ← timestamp を使わないので limit のみ
   );
 
   onSnapshot(q, (snap) => {
@@ -77,7 +73,7 @@ function renderLogs() {
         <td>${d.userId ?? ""}</td>
         <td>${d.action ?? ""}</td>
         <td>${d.detail ?? ""}</td>
-        <td>${d.timestamp?.toDate().toLocaleString() ?? ""}</td>
+        <td></td>   <!-- timestamp を使わないので空欄 -->
       </tr>
     `)
     .join("");
