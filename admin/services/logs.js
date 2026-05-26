@@ -3,7 +3,7 @@ import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/fir
 
 /**
  * ログ書き込み
- * @param {string} type - ログの種類 (admin_action, login, error など)
+ * @param {string} type - ログの種類 (admin_action, login, error, gacha など)
  * @param {object} data - 任意の追加情報
  */
 export async function writeLog(type, data = {}) {
