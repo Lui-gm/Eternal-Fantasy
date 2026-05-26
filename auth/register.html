@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>新規登録 - Eternal Fantasy</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <script type="module" src="../js/firebase.js"></script>
+  <script type="module">
+    import { auth } from "../js/firebase.js";
+    import {
+      createUserWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+    window.register = async () => {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+      const msg = document.getElementById("msg");
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        msg.textContent = "登録成功！ログインしてください。";
+        msg.className = "success";
+        setTimeout(() => location.href = "./login.html", 800);
+      } catch (e) {
+        msg.textContent = "登録失敗：" + e.message;
+        msg.className = "error";
+      }
+    };
+  </script>
+</head>
+
+<body>
+  <div id="app">
+    <h1>Eternal Fantasy</h1>
+
+    <input id="email" type="email" placeholder="メールアドレス" />
+    <input id="password" type="password" placeholder="パスワード" />
+
+    <button onclick="register()">新規登録</button>
+
+    <p id="msg"></p>
+
+    <div id="nav">
+      <a href="./login.html">ログイン</a> |
+      <a href="../index.html">戻る</a>
+    </div>
+  </div>
+</body>
+</html>
