@@ -106,16 +106,19 @@
   </div>
 </div>
 
+<!-- ★ Firebase 初期化（絶対必要） -->
+<script type="module" src="../js/firebase.js"></script>
+
+<!-- ★ 認証チェック（db を export する auth.js） -->
 <script type="module" src="auth.js"></script>
 
+<!-- ★ ページ切り替え -->
 <script type="module">
-  // ページ読み込み
   window.loadPage = async (page) => {
     document.getElementById("pageTitle").innerText = page;
 
     const main = document.getElementById("main");
 
-    // ページごとに動的 import
     try {
       const module = await import(`./pages/${page}.js`);
       module.loadPage(main);
