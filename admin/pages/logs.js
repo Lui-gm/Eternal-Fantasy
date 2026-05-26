@@ -9,7 +9,7 @@ import {
 
 export async function loadPage(main) {
   main.innerHTML = `
-    <h1>ログ閲覧</h1>
+    <h1>ログ閲覧（リアルタイム）</h1>
 
     <div style="margin-bottom: 20px;">
       <select id="filterType">
@@ -37,14 +37,13 @@ export async function loadPage(main) {
     </table>
   `;
 
-  // フィルタ変更時に再描画
   document.getElementById("filterType").addEventListener("change", renderLogs);
   document.getElementById("searchBox").addEventListener("input", renderLogs);
 
   startRealtimeListener();
 }
 
-let logsCache = []; // リアルタイムで受け取ったログを保持
+let logsCache = [];
 
 function startRealtimeListener() {
   const q = query(
@@ -53,7 +52,6 @@ function startRealtimeListener() {
     limit(200)
   );
 
-  // リアルタイム監視
   onSnapshot(q, (snap) => {
     logsCache = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     renderLogs();
@@ -72,7 +70,7 @@ function renderLogs() {
       return true;
     })
     .map(d => `
-      <tr>
+      <tr style="background:${getColor(d.type)};">
         <td>${d.type}</td>
         <td>${d.userId ?? ""}</td>
         <td>${d.action ?? ""}</td>
@@ -81,4 +79,14 @@ function renderLogs() {
       </tr>
     `)
     .join("");
+}
+
+function getColor(type) {
+  switch (type) {
+    case "error": return "#ffcccc";
+    case "admin_action": return "#cce0ff";
+    case "login": return "#ccffcc";
+    case "gacha": return "#f2ccff";
+    default: return "white";
+  }
 }
