@@ -3,24 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <title>新規登録 - Eternal Fantasy</title>
+
   <link rel="stylesheet" href="../css/style.css" />
   <script type="module" src="../js/firebase.js"></script>
+
   <script type="module">
-    import { auth } from "../js/firebase.js";
+    import { auth, db } from "../js/firebase.js";
     import {
       createUserWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import {
+      doc, setDoc
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     window.register = async () => {
+      const username = document.getElementById("username").value;
       const email = document.getElementById("email").value;
       const pass = document.getElementById("password").value;
       const msg = document.getElementById("msg");
 
+      if (!username) {
+        msg.textContent = "ユーザー名を入力してください。";
+        msg.className = "error";
+        return;
+      }
+
       try {
-        await createUserWithEmailAndPassword(auth, email, pass);
+        // Auth に登録
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        const uid = userCred.user.uid;
+
+        // Firestore にユーザー名を保存
+        await setDoc(doc(db, "users", uid), {
+          username: username,
+          email: email,
+          createdAt: new Date()
+        });
+
         msg.textContent = "登録成功！ログインしてください。";
         msg.className = "success";
         setTimeout(() => location.href = "./login.html", 800);
+
       } catch (e) {
         msg.textContent = "登録失敗：" + e.message;
         msg.className = "error";
@@ -33,6 +56,7 @@
   <div id="app">
     <h1>Eternal Fantasy</h1>
 
+    <input id="username" type="text" placeholder="ユーザー名" />
     <input id="email" type="email" placeholder="メールアドレス" />
     <input id="password" type="password" placeholder="パスワード" />
 
