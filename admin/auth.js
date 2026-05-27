@@ -1,35 +1,36 @@
 // ===============================
-// Firebase Auth ログイン処理
-// 管理者判定 → localStorage に保存
+// Firebase Auth + Firestore 管理者判定
 // ===============================
 
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { auth } from "./firebase.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { auth, db } from "./firebase.js";
 
-// 管理者メール一覧（必要なら複数登録可能）
-const ADMIN_EMAILS = [
-  "admin@example.com",
-  "owner@example.com"
-];
-
-// -------------------------------
-// ログイン処理
-// -------------------------------
 export async function login(email, password) {
   try {
+    // Firebase Auth ログイン
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // 管理者判定
-    const isAdmin = ADMIN_EMAILS.includes(user.email);
+    // Firestore から管理者リスト取得
+    const adminRef = doc(db, "system", "admins");
+    const adminSnap = await getDoc(adminRef);
 
-    if (isAdmin) {
-      localStorage.setItem("isAdmin", "true");
-    } else {
-      localStorage.removeItem("isAdmin");
+    if (!adminSnap.exists()) {
+      alert("管理者リストが存在しません");
+      return;
+    }
+
+    const adminList = adminSnap.data().emails || [];
+    const isAdmin = adminList.includes(user.email);
+
+    if (!isAdmin) {
       alert("管理者権限がありません");
       return;
     }
+
+    // 管理者フラグを保存
+    localStorage.setItem("isAdmin", "true");
 
     // 管理画面へ
     location.href = "/admin/admin.html";
