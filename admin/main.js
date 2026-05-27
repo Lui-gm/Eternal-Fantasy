@@ -1,6 +1,9 @@
 // ===============================
-// 管理画面：ページ切替（認証なし）
+// 管理画面：ページ切替（Firestore 対応版）
 // ===============================
+
+// Firebase 初期化（Auth + Firestore）
+import { db } from "../js/firebase.js";
 
 // ページモジュール読み込み
 import * as dashboard from "./pages/dashboard.js";
@@ -34,9 +37,9 @@ export function navigate(pageName) {
   // HTML差し替え
   main.innerHTML = page.html;
 
-  // ページ固有の初期化
+  // ページ固有の初期化（db を渡す）
   if (typeof page.init === "function") {
-    page.init();
+    page.init(db);
   }
 }
 
