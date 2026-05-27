@@ -32,37 +32,35 @@ export const html = `
 
     <p id="maintenanceStatus" style="margin-top:15px; color:#555;"></p>
   </div>
+
+  <script>
+    document.getElementById("manualStart").addEventListener("click", async () => {
+      const start = new Date(document.getElementById("startAt").value).getTime();
+      const end = new Date(document.getElementById("endAt").value).getTime();
+      const msg = document.getElementById("message").value;
+
+      await setDoc(doc(db, "system", "maintenance"), {
+        active: true,
+        manual: true,
+        startAt: start || Date.now(),
+        endAt: end || null,
+        message: msg || "メンテナンス中です"
+      });
+
+      document.getElementById("maintenanceStatus").innerText =
+        "手動メンテナンスを開始しました。";
+    });
+
+    document.getElementById("manualEnd").addEventListener("click", async () => {
+      await setDoc(doc(db, "system", "maintenance"), {
+        active: false,
+        manual: false,
+        endAt: Date.now(),
+        message: ""
+      });
+
+      document.getElementById("maintenanceStatus").innerText =
+        "メンテナンスを終了しました。";
+    });
+  </script>
 `;
-
-export function loadPage(main) {
-  main.innerHTML = html;
-
-  const status = document.getElementById("maintenanceStatus");
-
-  document.getElementById("manualStart").addEventListener("click", async () => {
-    const start = new Date(document.getElementById("startAt").value).getTime();
-    const end = new Date(document.getElementById("endAt").value).getTime();
-    const msg = document.getElementById("message").value;
-
-    await setDoc(doc(db, "system", "maintenance"), {
-      active: true,
-      manual: true,
-      startAt: start || Date.now(),
-      endAt: end || null,
-      message: msg || "メンテナンス中です"
-    });
-
-    status.innerText = "手動メンテナンスを開始しました。";
-  });
-
-  document.getElementById("manualEnd").addEventListener("click", async () => {
-    await setDoc(doc(db, "system", "maintenance"), {
-      active: false,
-      manual: false,
-      endAt: Date.now(),
-      message: ""
-    });
-
-    status.innerText = "メンテナンスを終了しました。";
-  });
-}
