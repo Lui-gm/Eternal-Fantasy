@@ -1,13 +1,13 @@
-/* 背景（ログイン画面は黒系に戻す） */
+/* 背景（黒） */
 body {
   margin: 0;
   padding: 0;
-  background: #000; /* 黒背景 */
+  background: #000;
   font-family: "Segoe UI", sans-serif;
   color: #fff;
 }
 
-/* 全体を中央に寄せる */
+/* 全体中央寄せ */
 #app {
   width: 100%;
   max-width: 420px;
@@ -16,25 +16,45 @@ body {
   text-align: center;
 }
 
-/* 青いボックス（画像の中央のやつ） */
+/* 青いボックス */
 #screen {
-  background: rgba(0, 60, 120, 0.85); /* 青い半透明 */
+  background: rgba(0, 60, 120, 0.85);
   border: 1px solid #4aa3ff;
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 0 12px rgba(80, 150, 255, 0.4);
-  margin-bottom: 20px;
+
+  /* ★ 中身を縦に整列させる */
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* 要素間の余白 */
 }
 
-/* タイトル（Eternal Fantasy） */
-#app > h1 {
-  font-size: 26px;
-  margin-bottom: 20px;
-  color: #9cc9ff;
-  letter-spacing: 2px;
+/* ラベル（メールアドレス / パスワード） */
+label {
+  text-align: left;
+  font-size: 14px;
+  color: #dceaff;
+  margin-bottom: 4px;
 }
 
-/* ログアウトボタン風のデザイン（ログインボタンにも使える） */
+/* 入力欄（白枠＋角丸） */
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #bcd9ff;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 16px;
+}
+
+input::placeholder {
+  color: #c7dfff;
+}
+
+/* ログインボタン（青） */
 button {
   width: 100%;
   padding: 12px;
@@ -44,18 +64,23 @@ button {
   color: white;
   font-size: 16px;
   cursor: pointer;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 button:hover {
   background: #1565c0;
 }
 
-/* 下のリンク（トップへ戻る） */
+/* 下のリンク（新規登録 / パスワード再設定 / 戻る） */
+#nav {
+  margin-top: 16px;
+}
+
 #nav a {
   color: #8ab4ff;
   text-decoration: none;
   font-size: 14px;
+  margin: 0 6px;
 }
 
 #nav a:hover {
