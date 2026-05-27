@@ -2,11 +2,11 @@ import { db } from "../../js/firebase.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export function loadPage(main) {
+  console.log("[maintenance.js] loadPage 実行開始");
+  console.log("[Firestore import check]", { doc, setDoc });
+
   main.innerHTML = `
     <h2>メンテナンス管理</h2>
-
-  console.log("Firestore import:", doc, setDoc);
-
 
     <div style="
       background:white; padding:20px; border-radius:12px;
@@ -38,41 +38,50 @@ export function loadPage(main) {
     </div>
   `;
 
-  // DOM が生成された後にイベント登録
-  setTimeout(() => {
-    const status = document.getElementById("maintenanceStatus");
+  const status = document.getElementById("maintenanceStatus");
 
-    document.getElementById("manualStart").addEventListener("click", async () => {
-      const start = new Date(document.getElementById("startAt").value).getTime();
-      const end = new Date(document.getElementById("endAt").value).getTime();
-      const msg = document.getElementById("message").value;
+  const startBtn = document.getElementById("manualStart");
+  const endBtn = document.getElementById("manualEnd");
 
-      try {
-        await setDoc(doc(db, "system", "maintenance"), {
-          active: true,
-          manual: true,
-          startAt: start || Date.now(),
-          endAt: end || null,
-          message: msg || "メンテナンス中です"
-        });
-        status.innerText = "手動メンテナンスを開始しました。";
-      } catch (e) {
-        status.innerText = "エラー：" + e.message;
-      }
-    });
+  console.log("[Event] manualStart 登録完了");
+  console.log("[Event] manualEnd 登録完了");
 
-    document.getElementById("manualEnd").addEventListener("click", async () => {
-      try {
-        await setDoc(doc(db, "system", "maintenance"), {
-          active: false,
-          manual: false,
-          endAt: Date.now(),
-          message: ""
-        });
-        status.innerText = "メンテナンスを終了しました。";
-      } catch (e) {
-        status.innerText = "エラー：" + e.message;
-      }
-    });
-  }, 0);
+  startBtn.addEventListener("click", async () => {
+    console.log("[Click] manualStart 押された");
+
+    const start = new Date(document.getElementById("startAt").value).getTime();
+    const end = new Date(document.getElementById("endAt").value).getTime();
+    const msg = document.getElementById("message").value;
+
+    try {
+      await setDoc(doc(db, "system", "maintenance"), {
+        active: true,
+        manual: true,
+        startAt: start || Date.now(),
+        endAt: end || null,
+        message: msg || "メンテナンス中です"
+      });
+      status.innerText = "手動メンテナンスを開始しました。";
+    } catch (e) {
+      console.error("[Firestore Error]", e);
+      status.innerText = "Firestore エラー: " + e.message;
+    }
+  });
+
+  endBtn.addEventListener("click", async () => {
+    console.log("[Click] manualEnd 押された");
+
+    try {
+      await setDoc(doc(db, "system", "maintenance"), {
+        active: false,
+        manual: false,
+        endAt: Date.now(),
+        message: ""
+      });
+      status.innerText = "メンテナンスを終了しました。";
+    } catch (e) {
+      console.error("[Firestore Error]", e);
+      status.innerText = "Firestore エラー: " + e.message;
+    }
+  });
 }
