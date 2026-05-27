@@ -67,27 +67,18 @@
 <!-- ★ Firebase Auth のみで認証するガード -->
 <script>
   if (localStorage.getItem("isAdmin") !== "true") {
-    location.href = "./login.html";  /* ← Firestore 不使用なのでこれだけでOK */
+    location.href = "./login.html";
   }
 </script>
 
 <div id="sidebar">
   <h2>管理メニュー</h2>
 
-  <div class="menu-item" onclick="window.loadPage('dashboard')">ダッシュボード</div>
-  <div class="menu-item" onclick="window.loadPage('skills')">スキル管理</div>
-  <div class="menu-item" onclick="window.loadPage('weapons')">武器管理</div>
-  <div class="menu-item" onclick="window.loadPage('summons')">召喚石管理</div>
-  <div class="menu-item" onclick="window.loadPage('characters')">キャラ管理</div>
-  <div class="menu-item" onclick="window.loadPage('enemies')">敵データ管理</div>
-  <div class="menu-item" onclick="window.loadPage('gacha')">ガチャ管理</div>
-  <div class="menu-item" onclick="window.loadPage('events')">イベント管理</div>
-  <div class="menu-item" onclick="window.loadPage('users')">ユーザー管理</div>
-  <div class="menu-item" onclick="window.loadPage('logs')">ログ閲覧</div>
-  <div class="menu-item" onclick="window.loadPage('notices')">通知送信</div>
-  <div class="menu-item" onclick="window.loadPage('maintenance')">メンテナンス</div>
-  <div class="menu-item" onclick="window.loadPage('debug')">デバッグ</div>
-  <div class="menu-item" onclick="window.loadPage('settings')">設定</div>
+  <div class="menu-item" data-page="dashboard">ダッシュボード</div>
+  <div class="menu-item" data-page="skills">スキル管理</div>
+  <div class="menu-item" data-page="weapons">武器管理</div>
+  <div class="menu-item" data-page="users">ユーザー管理</div>
+  <div class="menu-item" data-page="logs">ログ閲覧</div>
 
   <button id="logout" onclick="logout()">ログアウト</button>
 </div>
@@ -101,29 +92,14 @@
   <div id="main"></div>
 </div>
 
-<!-- Firebase 初期化 -->
+<!-- Firebase 初期化（Auth + Firestore） -->
 <script type="module" src="../js/firebase.js"></script>
 
 <!-- 認証処理（Firebase Auth のみ） -->
 <script type="module" src="./auth.js"></script>
 
-<!-- ページ切り替え -->
-<script type="module">
-  window.loadPage = async (page) => {
-    document.getElementById("pageTitle").innerText = page;
-
-    const main = document.getElementById("main");
-
-    try {
-      const module = await import(`./pages/${page}.js`);
-      module.loadPage(main);
-    } catch (e) {
-      main.innerHTML = `<h2>ページが存在しません: ${page}</h2>`;
-    }
-  };
-
-  loadPage("dashboard");
-</script>
+<!-- ★ ページ切り替え（Firestore を使う pages/*.js が動く） -->
+<script type="module" src="./main.js"></script>
 
 </body>
 </html>
