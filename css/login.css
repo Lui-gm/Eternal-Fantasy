@@ -1,0 +1,45 @@
+/* 全体レイアウトの基本設定 */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #ffffff; /* 元のようなプレーン背景に戻す */
+  color: #222;
+}
+
+/* アプリ全体のコンテナ */
+#app {
+  max-width: 960px;
+  margin: 40px auto;
+  padding: 16px;
+}
+
+/* タイトル */
+#app > h1 {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+/* 画面表示領域 */
+#screen {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 200px;
+  background: #f9f9f9;
+}
+
+/* ナビゲーション */
+#nav {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+#nav a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+#nav a:hover {
+  text-decoration: underline;
+}
