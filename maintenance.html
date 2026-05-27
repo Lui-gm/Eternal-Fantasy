@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>メンテナンス中 | Eternal Fantasy</title>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    font-family: "Segoe UI", sans-serif;
+    color: white;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .box {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 40px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 480px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  h1 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
+
+  .msg {
+    margin-top: 15px;
+    font-size: 16px;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .time {
+    margin-top: 20px;
+    font-size: 14px;
+    opacity: 0.7;
+  }
+
+  .loader {
+    margin: 25px auto 0;
+    border: 4px solid rgba(255,255,255,0.2);
+    border-top: 4px solid #00c3ff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1 id="title">メンテナンス中</h1>
+  <div class="msg" id="message">現在メンテナンスを実施しています。</div>
+  <div class="time" id="endTime"></div>
+  <div class="loader"></div>
+</div>
+
+<script type="module">
+  import { db } from "./js/firebase.js";
+  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  async function loadMaintenance() {
+    const snap = await getDoc(doc(db, "system", "maintenance"));
+    const m = snap.data();
+
+    // タイトル
+    if (m.mode === "emergency") {
+      document.getElementById("title").innerText = "緊急メンテナンス";
+    }
+
+    // メッセージ
+    document.getElementById("message").innerText =
+      m.message || "現在メンテナンスを実施しています。";
+
+    // 終了予定
+    if (m.expectedEnd) {
+      const t = new Date(m.expectedEnd);
+      document.getElementById("endTime").innerText =
+        "終了予定：" + t.toLocaleString();
+    }
+  }
+
+  loadMaintenance();
+</script>
+
+</body>
+</html>
