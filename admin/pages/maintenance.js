@@ -1,87 +1,89 @@
+// pages/maintenance.js
 import { db } from "../../js/firebase.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-export function loadPage(main) {
-  console.log("[maintenance.js] loadPage 実行開始");
-  console.log("[Firestore import check]", { doc, setDoc });
-
+export async function loadPage(main) {
   main.innerHTML = `
     <h2>メンテナンス管理</h2>
 
-    <div style="
-      background:white; padding:20px; border-radius:12px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1); width:500px;">
+    <div style="margin-top:20px; padding:20px; background:white; border-radius:8px;">
 
-      <label>メンテナンス開始時刻</label><br>
-      <input id="startAt" type="datetime-local" style="width:100%; padding:10px;"><br><br>
+      <label>メンテナンスモード</label><br>
+      <select id="mode" style="padding:8px; width:200px; margin-top:5px;">
+        <option value="none">none（通常）</option>
+        <option value="soft">soft（部分メンテ）</option>
+        <option value="hard">hard（ログイン不可）</option>
+        <option value="emergency">emergency（緊急遮断）</option>
+      </select>
 
-      <label>メンテナンス終了予定時刻</label><br>
-      <input id="endAt" type="datetime-local" style="width:100%; padding:10px;"><br><br>
+      <br><br>
 
-      <label>メンテナンス内容</label><br>
-      <textarea id="message" style="
-        width:100%; height:120px; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea><br><br>
+      <label>ユーザー向けメッセージ</label><br>
+      <textarea id="message" style="width:100%; height:80px; margin-top:5px;"></textarea>
 
-      <button id="manualStart" style="
-        padding:10px 20px; background:#ff9800; color:white;
-        border:none; border-radius:8px; cursor:pointer; margin-right:10px;">
-        手動メンテ開始
+      <br><br>
+
+      <label>終了予定時刻</label><br>
+      <input id="expectedEnd" type="datetime-local" style="padding:8px; margin-top:5px;">
+
+      <br><br>
+
+      <label>内部メモ（reason）</label><br>
+      <textarea id="reason" style="width:100%; height:60px; margin-top:5px;"></textarea>
+
+      <br><br>
+
+      <button id="saveBtn" style="
+        padding:10px 20px; background:#007bff; color:white;
+        border:none; border-radius:6px; cursor:pointer;">
+        更新する
       </button>
 
-      <button id="manualEnd" style="
-        padding:10px 20px; background:#4caf50; color:white;
-        border:none; border-radius:8px; cursor:pointer;">
-        手動メンテ終了
-      </button>
-
-      <p id="maintenanceStatus" style="margin-top:15px; color:#555;"></p>
+      <div id="status" style="margin-top:20px; color:#555;"></div>
     </div>
   `;
 
-  const status = document.getElementById("maintenanceStatus");
+  // Firestore から現在の設定を読み込み
+  const ref = doc(db, "system", "maintenance");
+  const snap = await getDoc(ref);
 
-  const startBtn = document.getElementById("manualStart");
-  const endBtn = document.getElementById("manualEnd");
+  if (snap.exists()) {
+    const data = snap.data();
 
-  console.log("[Event] manualStart 登録完了");
-  console.log("[Event] manualEnd 登録完了");
+    document.getElementById("mode").value = data.mode ?? "none";
+    document.getElementById("message").value = data.message ?? "";
+    document.getElementById("reason").value = data.reason ?? "";
+    document.getElementById("expectedEnd").value =
+      data.expectedEnd ? data.expectedEnd.replace("Z", "") : "";
 
-  startBtn.addEventListener("click", async () => {
-    console.log("[Click] manualStart 押された");
+    document.getElementById("status").innerHTML = `
+      <b>現在の状態：</b> ${data.mode}<br>
+      <b>最終更新：</b> ${data.updatedBy ?? "不明"}<br>
+      <b>更新時刻：</b> ${new Date(data.updatedAt).toLocaleString()}
+    `;
+  }
 
-    const start = new Date(document.getElementById("startAt").value).getTime();
-    const end = new Date(document.getElementById("endAt").value).getTime();
-    const msg = document.getElementById("message").value;
+  // 保存処理
+  document.getElementById("saveBtn").addEventListener("click", async () => {
+    const mode = document.getElementById("mode").value;
+    const message = document.getElementById("message").value;
+    const reason = document.getElementById("reason").value;
+    const expectedEnd = document.getElementById("expectedEnd").value;
 
-    try {
-      await setDoc(doc(db, "system", "maintenance"), {
-        active: true,
-        manual: true,
-        startAt: start || Date.now(),
-        endAt: end || null,
-        message: msg || "メンテナンス中です"
-      });
-      status.innerText = "手動メンテナンスを開始しました。";
-    } catch (e) {
-      console.error("[Firestore Error]", e);
-      status.innerText = "Firestore エラー: " + e.message;
-    }
-  });
+    await setDoc(ref, {
+      mode,
+      message,
+      reason,
+      expectedEnd,
+      updatedAt: Date.now(),
+      updatedBy: "紬稀"
+    });
 
-  endBtn.addEventListener("click", async () => {
-    console.log("[Click] manualEnd 押された");
-
-    try {
-      await setDoc(doc(db, "system", "maintenance"), {
-        active: false,
-        manual: false,
-        endAt: Date.now(),
-        message: ""
-      });
-      status.innerText = "メンテナンスを終了しました。";
-    } catch (e) {
-      console.error("[Firestore Error]", e);
-      status.innerText = "Firestore エラー: " + e.message;
-    }
+    document.getElementById("status").innerHTML = `
+      <b>更新しました。</b><br>
+      <b>現在の状態：</b> ${mode}<br>
+      <b>最終更新：</b> 紬稀<br>
+      <b>更新時刻：</b> ${new Date().toLocaleString()}
+    `;
   });
 }
