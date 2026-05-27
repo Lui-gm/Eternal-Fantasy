@@ -2,33 +2,103 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>管理ログイン</title>
+  <title>ログイン</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 350px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #loginError {
+      color: red;
+      margin-top: 15px;
+      min-height: 20px;
+    }
+  </style>
 </head>
+
 <body>
+  <div class="login-box">
+    <h2>管理ログイン</h2>
 
-<h2>管理ログイン</h2>
+    <form id="loginForm">
+      <input id="email" type="email" placeholder="メールアドレス" required>
+      <input id="password" type="password" placeholder="パスワード" required>
+      <button type="submit">ログイン</button>
+    </form>
 
-<form id="loginForm">
-  <input type="email" id="email" placeholder="メールアドレス" required>
-  <input type="password" id="password" placeholder="パスワード" required>
-  <button type="submit">ログイン</button>
-</form>
+    <p id="loginError"></p>
+  </div>
 
-<!-- Firebase 初期化 -->
-<script type="module" src="../js/firebase.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-<!-- 管理者ログイン処理 -->
-<script type="module">
-  import { login } from "./auth.js";
+    // ★ 紬稀の firebaseConfig をここに入れる
+    const firebaseConfig = {
+      apiKey: "YOUR_KEY",
+      authDomain: "YOUR_DOMAIN",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER",
+      appId: "YOUR_APPID"
+    };
 
-  document.getElementById("loginForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    login(
-      document.getElementById("email").value,
-      document.getElementById("password").value
-    );
-  });
-</script>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
+    const errorBox = document.getElementById("loginError");
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      errorBox.innerText = ""; // 前回のエラー消す
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+        // ★ ログイン成功
+        localStorage.setItem("isAdmin", "true");
+
+        // ★ admin.html に遷移
+        location.href = "./admin.html";
+
+      } catch (err) {
+        // ★ ブラウザ上にエラー表示
+        errorBox.innerText = `ログイン失敗：${err.code}`;
+      }
+    });
+  </script>
 </body>
 </html>
