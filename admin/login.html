@@ -58,22 +58,9 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword }
+    import { auth } from "../js/firebase.js";  // ← ★ firebase.js の auth を使う
+    import { signInWithEmailAndPassword }
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    // ★ 紬稀の firebaseConfig（正しい）
-    const firebaseConfig = {
-      apiKey: "AIzaSyDzA2CXQQTR4cV0if4ahfOJx98y5k6Rhp4",
-      authDomain: "eternal-fantasy.firebaseapp.com",
-      projectId: "eternal-fantasy",
-      storageBucket: "eternal-fantasy.appspot.com",
-      messagingSenderId: "547745935105",
-      appId: "1:547745935105:web:69cc7119b9d5470e9c7500"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
 
     const errorBox = document.getElementById("loginError");
 
@@ -83,19 +70,15 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      errorBox.innerText = ""; // 前回のエラー消す
+      errorBox.innerText = "";
 
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
 
-        // ★ ログイン成功
         localStorage.setItem("isAdmin", "true");
-
-        // ★ admin.html に遷移
         location.href = "./admin.html";
 
       } catch (err) {
-        // ★ ブラウザ上にエラー表示
         errorBox.innerText = `ログイン失敗：${err.code}`;
       }
     });
