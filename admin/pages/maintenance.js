@@ -33,6 +33,15 @@ export async function loadPage(main) {
 
       <br><br>
 
+      <h3>機能別メンテ設定</h3>
+
+      <label><input type="checkbox" id="f_market"> マーケット</label><br>
+      <label><input type="checkbox" id="f_guild"> ギルド</label><br>
+      <label><input type="checkbox" id="f_raid"> レイド</label><br>
+      <label><input type="checkbox" id="f_pvp"> PvP</label><br>
+
+      <br>
+
       <button id="saveBtn" style="
         padding:10px 20px; background:#007bff; color:white;
         border:none; border-radius:6px; cursor:pointer;">
@@ -56,6 +65,13 @@ export async function loadPage(main) {
     document.getElementById("expectedEnd").value =
       data.expectedEnd ? data.expectedEnd.replace("Z", "") : "";
 
+    // ★ 機能別メンテフラグを反映
+    const f = data.features ?? {};
+    document.getElementById("f_market").checked = f.market ?? true;
+    document.getElementById("f_guild").checked = f.guild ?? true;
+    document.getElementById("f_raid").checked = f.raid ?? true;
+    document.getElementById("f_pvp").checked = f.pvp ?? true;
+
     document.getElementById("status").innerHTML = `
       <b>現在の状態：</b> ${data.mode}<br>
       <b>最終更新：</b> ${data.updatedBy ?? "不明"}<br>
@@ -70,13 +86,22 @@ export async function loadPage(main) {
     const reason = document.getElementById("reason").value;
     const expectedEnd = document.getElementById("expectedEnd").value;
 
+    // ★ 機能別メンテフラグを Firestore に保存
+    const features = {
+      market: document.getElementById("f_market").checked,
+      guild: document.getElementById("f_guild").checked,
+      raid: document.getElementById("f_raid").checked,
+      pvp: document.getElementById("f_pvp").checked
+    };
+
     await setDoc(ref, {
       mode,
       message,
       reason,
       expectedEnd,
       updatedAt: Date.now(),
-      updatedBy: "紬稀"
+      updatedBy: "紬稀",
+      features
     });
 
     document.getElementById("status").innerHTML = `
