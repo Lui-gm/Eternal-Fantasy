@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Eternal Fantasy 管理画面</title>
+
 <style>
   body {
     margin: 0;
@@ -18,11 +19,6 @@
     color: white;
     padding: 20px;
     box-sizing: border-box;
-  }
-
-  #sidebar h2 {
-    margin-top: 0;
-    font-size: 20px;
   }
 
   .menu-item {
@@ -49,7 +45,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    box-sizing: border-box;
   }
 
   #main {
@@ -69,15 +64,15 @@
 </head>
 <body>
 
-<!-- ★ ここが最重要：相対パスに修正 -->
+<!-- ★ Firebase Auth のみで認証するガード -->
 <script>
   if (localStorage.getItem("isAdmin") !== "true") {
-    location.href = "./login.html";   // ← これが正解
+    location.href = "./login.html";  /* ← Firestore 不使用なのでこれだけでOK */
   }
 </script>
 
 <div id="sidebar">
-  <h2>管理メニューv1</h2>
+  <h2>管理メニュー</h2>
 
   <div class="menu-item" onclick="window.loadPage('dashboard')">ダッシュボード</div>
   <div class="menu-item" onclick="window.loadPage('skills')">スキル管理</div>
@@ -109,7 +104,7 @@
 <!-- Firebase 初期化 -->
 <script type="module" src="../js/firebase.js"></script>
 
-<!-- 認証処理 -->
+<!-- 認証処理（Firebase Auth のみ） -->
 <script type="module" src="./auth.js"></script>
 
 <!-- ページ切り替え -->
