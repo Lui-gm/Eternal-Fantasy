@@ -5,6 +5,9 @@ export function loadPage(main) {
   main.innerHTML = `
     <h2>メンテナンス管理</h2>
 
+  console.log("Firestore import:", doc, setDoc);
+
+
     <div style="
       background:white; padding:20px; border-radius:12px;
       box-shadow:0 4px 12px rgba(0,0,0,0.1); width:500px;">
