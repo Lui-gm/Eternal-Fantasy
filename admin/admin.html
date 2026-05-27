@@ -77,8 +77,16 @@
   <div class="menu-item" data-page="dashboard">ダッシュボード</div>
   <div class="menu-item" data-page="skills">スキル管理</div>
   <div class="menu-item" data-page="weapons">武器管理</div>
+  <div class="menu-item" data-page="characters">キャラ管理</div>
+  <div class="menu-item" data-page="enemies">敵データ管理</div>
+  <div class="menu-item" data-page="gacha">ガチャ管理</div>
+  <div class="menu-item" data-page="events">イベント管理</div>
   <div class="menu-item" data-page="users">ユーザー管理</div>
   <div class="menu-item" data-page="logs">ログ閲覧</div>
+  <div class="menu-item" data-page="notices">通知送信</div>
+  <div class="menu-item" data-page="maintenance">メンテナンス</div>
+  <div class="menu-item" data-page="debug">デバッグ</div>
+  <div class="menu-item" data-page="settings">設定</div>
 
   <button id="logout" onclick="logout()">ログアウト</button>
 </div>
@@ -98,8 +106,32 @@
 <!-- 認証処理（Firebase Auth のみ） -->
 <script type="module" src="./auth.js"></script>
 
-<!-- ★ ページ切り替え（Firestore を使う pages/*.js が動く） -->
-<script type="module" src="./main.js"></script>
+<!-- ★ ページ切り替え（本体） -->
+<script type="module">
+  const main = document.getElementById("main");
+
+  // ★ window に確実に登録（onclick でも data-page でも動く）
+  window.loadPage = async (page) => {
+    document.getElementById("pageTitle").innerText = page;
+
+    try {
+      const module = await import(`./pages/${page}.js`);
+      module.loadPage(main);
+    } catch (e) {
+      main.innerHTML = `<h2>ページが存在しません: ${page}</h2>`;
+    }
+  };
+
+  // ★ サイドバーのクリックイベント（確実に動く）
+  document.querySelectorAll(".menu-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      window.loadPage(btn.dataset.page);
+    });
+  });
+
+  // ★ 初期ページ
+  window.loadPage("dashboard");
+</script>
 
 </body>
 </html>
