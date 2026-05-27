@@ -33,7 +33,7 @@ export async function login(email, password) {
     localStorage.setItem("isAdmin", "true");
 
     // 管理画面へ
-    location.href = "/admin/admin.html";
+    location.href = "./admin.html";
 
   } catch (err) {
     console.error(err);
