@@ -72,6 +72,13 @@
 </head>
 <body>
 
+<script>
+  // 管理者以外はログイン画面へ
+  if (localStorage.getItem("isAdmin") !== "true") {
+    location.href = "/login.html";
+  }
+</script>
+
 <!-- 左サイドバー -->
 <div id="sidebar">
   <h2>管理メニューv1</h2>
