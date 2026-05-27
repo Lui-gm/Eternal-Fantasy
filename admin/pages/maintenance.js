@@ -1,5 +1,5 @@
 import { db } from "../../js/firebase.js";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export function loadPage(main) {
   main.innerHTML = `
