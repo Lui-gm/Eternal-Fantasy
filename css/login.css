@@ -39,6 +39,7 @@ label {
 }
 
 /* 入力欄（白枠＋角丸） */
+input[type="text"],
 input[type="email"],
 input[type="password"] {
   width: 100%;
