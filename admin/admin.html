@@ -138,7 +138,7 @@
     try {
       await signOut(auth);
       localStorage.removeItem("isAdmin");
-      location.href = "/index.html";  // ← ゲーム本体へ
+      location.href = "../index.html";  // ← ゲーム本体へ
     } catch (err) {
       console.error("ログアウト失敗:", err);
     }
