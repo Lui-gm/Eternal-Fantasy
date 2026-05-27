@@ -35,32 +35,41 @@ export function loadPage(main) {
     </div>
   `;
 
-  const status = document.getElementById("maintenanceStatus");
+  // DOM が生成された後にイベント登録
+  setTimeout(() => {
+    const status = document.getElementById("maintenanceStatus");
 
-  document.getElementById("manualStart").addEventListener("click", async () => {
-    const start = new Date(document.getElementById("startAt").value).getTime();
-    const end = new Date(document.getElementById("endAt").value).getTime();
-    const msg = document.getElementById("message").value;
+    document.getElementById("manualStart").addEventListener("click", async () => {
+      const start = new Date(document.getElementById("startAt").value).getTime();
+      const end = new Date(document.getElementById("endAt").value).getTime();
+      const msg = document.getElementById("message").value;
 
-    await setDoc(doc(db, "system", "maintenance"), {
-      active: true,
-      manual: true,
-      startAt: start || Date.now(),
-      endAt: end || null,
-      message: msg || "メンテナンス中です"
+      try {
+        await setDoc(doc(db, "system", "maintenance"), {
+          active: true,
+          manual: true,
+          startAt: start || Date.now(),
+          endAt: end || null,
+          message: msg || "メンテナンス中です"
+        });
+        status.innerText = "手動メンテナンスを開始しました。";
+      } catch (e) {
+        status.innerText = "エラー：" + e.message;
+      }
     });
 
-    status.innerText = "手動メンテナンスを開始しました。";
-  });
-
-  document.getElementById("manualEnd").addEventListener("click", async () => {
-    await setDoc(doc(db, "system", "maintenance"), {
-      active: false,
-      manual: false,
-      endAt: Date.now(),
-      message: ""
+    document.getElementById("manualEnd").addEventListener("click", async () => {
+      try {
+        await setDoc(doc(db, "system", "maintenance"), {
+          active: false,
+          manual: false,
+          endAt: Date.now(),
+          message: ""
+        });
+        status.innerText = "メンテナンスを終了しました。";
+      } catch (e) {
+        status.innerText = "エラー：" + e.message;
+      }
     });
-
-    status.innerText = "メンテナンスを終了しました。";
-  });
+  }, 0);
 }
