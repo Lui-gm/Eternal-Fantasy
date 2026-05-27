@@ -1,130 +1,69 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>Eternal Fantasy 管理画面</title>
-
-<style>
-  body {
-    margin: 0;
-    font-family: sans-serif;
-    display: flex;
-    height: 100vh;
-    background: #f5f5f5;
-  }
-
-  #sidebar {
-    width: 240px;
-    background: #1e1e1e;
-    color: white;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-
-  .menu-item {
-    padding: 10px 0;
-    cursor: pointer;
-    border-bottom: 1px solid #333;
-  }
-
-  .menu-item:hover {
-    color: #00c3ff;
-  }
-
-  #content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  #header {
-    height: 60px;
-    background: white;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-  }
-
-  #main {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-  }
-
-  #logout {
-    padding: 8px 16px;
-    background: #ff4d4d;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>管理画面</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+    header {
+      background: #333;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #logoutBtn {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
 
-<script>
-  if (localStorage.getItem("isAdmin") !== "true") {
-    location.href = "./login.html";
-  }
-</script>
+  <header>
+    <h2>管理画面</h2>
+    <button id="logoutBtn">ログアウト</button>
+  </header>
 
-<div id="sidebar">
-  <h2>管理メニュー</h2>
+  <main>
+    <!-- ここに管理画面の内容 -->
+  </main>
 
-  <div class="menu-item" data-page="dashboard">ダッシュボード</div>
-  <div class="menu-item" data-page="notices">通知送信</div>
-  <div class="menu-item" data-page="maintenance">メンテナンス</div>
-  <div class="menu-item" data-page="debug">デバッグ</div>
-  <div class="menu-item" data-page="settings">設定</div>
+  <!-- Firebase 初期化は firebase.js に一本化 -->
+  <script type="module" src="../js/firebase.js?v=3"></script>
 
-  <button id="logout" onclick="logout()">ログアウト</button>
-</div>
+  <!-- 管理画面の処理 -->
+  <script type="module">
+    import { auth } from "../js/firebase.js";
+    import { signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-<div id="content">
-  <div id="header">
-    <div id="pageTitle">ダッシュボード</div>
-    <div>管理者：紬稀</div>
-  </div>
+    // ★ ログアウト処理
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
 
-  <div id="main"></div>
-</div>
+        // ログインフラグ削除
+        localStorage.removeItem("isAdmin");
 
-<script type="module" src="../js/firebase.js"></script>
-<script type="module" src="./maintenance.js"></script>
+        // ★ ゲーム本体へ遷移
+        location.href = "/index.html";
 
-<script type="module">
-  const main = document.getElementById("main");
-
-  window.loadPage = async (page) => {
-    document.getElementById("pageTitle").innerText = page;
-
-    try {
-      const module = await import(`./pages/${page}.js`);
-      module.loadPage(main);
-    } catch (e) {
-      main.innerHTML = `
-        <div style="
-          padding:20px; background:#ffe6e6; border-left:6px solid #ff4d4d;
-          border-radius:8px; font-family:monospace;">
-          <h2 style="margin-top:0;">ページ読み込みエラー</h2>
-          <p><b>読み込めなかったページ：</b> ${page}</p>
-          <p><b>原因：</b> ${e.message}</p>
-          <p style="color:#555;">（ファイル名・export・パスを確認してください）</p>
-        </div>
-      `;
-    }
-  };
-
-  document.querySelectorAll(".menu-item").forEach(btn => {
-    btn.addEventListener("click", () => {
-      loadPage(btn.dataset.page);
+      } catch (err) {
+        console.error("ログアウト失敗:", err);
+      }
     });
-  });
-
-  loadPage("dashboard");
-</script>
+  </script>
 
 </body>
 </html>
