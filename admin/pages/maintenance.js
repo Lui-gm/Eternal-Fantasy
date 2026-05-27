@@ -39,7 +39,6 @@ export function loadPage(main) {
 
   const status = document.getElementById("maintenanceStatus");
 
-  // 手動メンテ開始
   document.getElementById("manualStart").addEventListener("click", async () => {
     const start = new Date(document.getElementById("startAt").value).getTime();
     const end = new Date(document.getElementById("endAt").value).getTime();
@@ -56,7 +55,6 @@ export function loadPage(main) {
     status.innerText = "手動メンテナンスを開始しました。";
   });
 
-  // 手動メンテ終了
   document.getElementById("manualEnd").addEventListener("click", async () => {
     await setDoc(doc(db, "system", "maintenance"), {
       active: false,
