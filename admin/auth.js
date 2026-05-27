@@ -1,14 +1,16 @@
-// /admin/auth.js
-
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { signInWithEmailAndPassword } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, getDoc } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { auth, db } from "../js/firebase.js";
 
+// 管理者ログイン
 export async function login(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
+    // Firestore 管理者リスト
     const adminRef = doc(db, "system", "admins");
     const adminSnap = await getDoc(adminRef);
 
@@ -25,6 +27,7 @@ export async function login(email, password) {
       return;
     }
 
+    // 管理者フラグ
     localStorage.setItem("isAdmin", "true");
 
     // ★ 相対パスで admin.html へ
@@ -36,6 +39,7 @@ export async function login(email, password) {
   }
 }
 
+// ログアウト
 export function logout() {
   localStorage.removeItem("isAdmin");
   location.href = "./login.html";
