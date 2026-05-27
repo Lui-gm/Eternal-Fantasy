@@ -104,7 +104,16 @@
       const module = await import(`./pages/${page}.js`);
       module.loadPage(main);
     } catch (e) {
-      main.innerHTML = `<h2>ページが存在しません: ${page}</h2>`;
+      main.innerHTML = `
+        <div style="
+          padding:20px; background:#ffe6e6; border-left:6px solid #ff4d4d;
+          border-radius:8px; font-family:monospace;">
+          <h2 style="margin-top:0;">ページ読み込みエラー</h2>
+          <p><b>読み込めなかったページ：</b> ${page}</p>
+          <p><b>原因：</b> ${e.message}</p>
+          <p style="color:#555;">（ファイル名・export・パスを確認してください）</p>
+        </div>
+      `;
     }
   };
 
