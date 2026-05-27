@@ -65,7 +65,7 @@ export async function loadPage(main) {
     document.getElementById("expectedEnd").value =
       data.expectedEnd ? data.expectedEnd.replace("Z", "") : "";
 
-    // ★ 機能別メンテフラグを反映
+    // ★ 機能別メンテフラグ
     const f = data.features ?? {};
     document.getElementById("f_market").checked = f.market ?? true;
     document.getElementById("f_guild").checked = f.guild ?? true;
@@ -86,7 +86,6 @@ export async function loadPage(main) {
     const reason = document.getElementById("reason").value;
     const expectedEnd = document.getElementById("expectedEnd").value;
 
-    // ★ 機能別メンテフラグを Firestore に保存
     const features = {
       market: document.getElementById("f_market").checked,
       guild: document.getElementById("f_guild").checked,
