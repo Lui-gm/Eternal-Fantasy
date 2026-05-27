@@ -66,14 +66,12 @@
 
 <body>
 
-<!-- 認証ガード -->
 <script>
   if (localStorage.getItem("isAdmin") !== "true") {
     location.href = "./login.html";
   }
 </script>
 
-<!-- サイドバー -->
 <div id="sidebar">
   <h2>管理メニュー</h2>
 
@@ -86,7 +84,6 @@
   <button id="logoutBtn">ログアウト</button>
 </div>
 
-<!-- メインコンテンツ -->
 <div id="content">
   <div id="header">
     <div id="pageTitle">ダッシュボード</div>
@@ -96,23 +93,22 @@
   <div id="main"></div>
 </div>
 
-<!-- Firebase 初期化 -->
 <script type="module" src="../js/firebase.js?v=3"></script>
 
-<!-- 管理画面の処理 -->
 <script type="module">
   import { auth } from "../js/firebase.js";
   import { signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const main = document.getElementById("main");
 
-  // ★ ページ切替処理
+  // ★ ページ切替（元の仕様に完全復元）
   window.loadPage = async (page) => {
     document.getElementById("pageTitle").innerText = page;
 
     try {
       const module = await import(`./pages/${page}.js`);
-      main.innerHTML = module.html ?? `<h2>${page}</h2>`;
+      main.innerHTML = "";
+      module.loadPage(main);   // ← これが紬稀の元の仕様
     } catch (e) {
       main.innerHTML = `
         <div style="
@@ -138,7 +134,7 @@
     try {
       await signOut(auth);
       localStorage.removeItem("isAdmin");
-      location.href = "../index.html";  // ← ゲーム本体へ
+      location.href = "../index.html";
     } catch (err) {
       console.error("ログアウト失敗:", err);
     }
