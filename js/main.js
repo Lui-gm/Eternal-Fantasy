@@ -15,7 +15,6 @@ onAuthStateChanged(auth, (user) => {
     nav.style.display = "none"; // 元のナビは隠す
 
     screen.innerHTML = `
-      <h1 class="game-title">ETERNAL FANTASY</h1>
       <button class="start-btn" onclick="location.href='./auth/login.html'">
         GAME START
       </button>
