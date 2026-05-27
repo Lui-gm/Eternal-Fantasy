@@ -64,7 +64,6 @@
 </head>
 <body>
 
-<!-- 認証ガード -->
 <script>
   if (localStorage.getItem("isAdmin") !== "true") {
     location.href = "./login.html";
@@ -92,13 +91,9 @@
   <div id="main"></div>
 </div>
 
-<!-- Firebase 初期化 -->
 <script type="module" src="../js/firebase.js"></script>
-
-<!-- 認証処理 -->
 <script type="module" src="./auth.js"></script>
 
-<!-- ページ切替（軽量版） -->
 <script type="module">
   const main = document.getElementById("main");
 
@@ -107,7 +102,7 @@
 
     try {
       const module = await import(`./pages/${page}.js`);
-      main.innerHTML = module.html ?? `<h2>${page}</h2>`;
+      module.loadPage(main);
     } catch (e) {
       main.innerHTML = `<h2>ページが存在しません: ${page}</h2>`;
     }
