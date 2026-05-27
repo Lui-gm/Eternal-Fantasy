@@ -1,20 +1,15 @@
-// js/firebase.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+// Firebase CDN 版（GitHub Pages 対応）
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDzA2CXQQTR4cV0if4ahfOJx98y5k6Rhp4",
   authDomain: "eternal-fantasy.firebaseapp.com",
   projectId: "eternal-fantasy",
   storageBucket: "eternal-fantasy.appspot.com",
   messagingSenderId: "547745935105",
-  appId: "1:547745935105:web:69cc7119b9d5470e9c7500",
-  measurementId: "G-1Q4CBRQFL3"
+  appId: "1:547745935105:web:69cc7119b9d5470e9c7500"
 };
 
 export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
-export const auth = getAuth(app);
 export const db = getFirestore(app);
