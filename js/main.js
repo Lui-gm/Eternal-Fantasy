@@ -4,18 +4,21 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const screen = document.getElementById("screen");
+const nav = document.getElementById("nav");
 
-// ログイン状態を監視
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    screen.innerHTML = `
-      <p>ログイン中: ${user.email}</p>
-      <a href="./game/game.html">ゲームを開始</a>
-    `;
+    // ログイン済み → game.html へ
+    location.href = "./game/game.html";
   } else {
+    // ログイン前 → タイトル画面
+    nav.style.display = "none"; // 元のナビは隠す
+
     screen.innerHTML = `
-      <p>ログインしていません</p>
-      <a href="./auth/login.html">ログイン</a>
+      <h1 class="game-title">ETERNAL FANTASY</h1>
+      <button class="start-btn" onclick="location.href='./auth/login.html'">
+        GAME START
+      </button>
     `;
   }
 });
